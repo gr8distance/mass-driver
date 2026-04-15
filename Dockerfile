@@ -16,22 +16,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsqlite3-dev \
     libpq-dev \
     libmariadb-dev \
+    git \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Install area51
+RUN git clone --depth 1 https://github.com/gr8distance/area51.git /tmp/area51 \
+    && cd /tmp/area51 \
+    && sbcl --non-interactive --load build.lisp \
+    && cp bin/area51 /usr/local/bin/area51 \
+    && rm -rf /tmp/area51
 
 # Copy project files
 COPY . .
 
-# Install dependencies and build binary via area51
-# If area51 is not available in the image, fall back to Quicklisp + ASDF
-RUN if command -v area51 > /dev/null 2>&1; then \
-      area51 install && area51 build; \
-    else \
-      sbcl --non-interactive \
-           --eval '(load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))' \
-           --eval '(push (truename ".") asdf:*central-registry*)' \
-           --eval '(ql:quickload "mass-driver")' \
-           --eval '(sb-ext:save-lisp-and-die "mass-driver" :toplevel #'"'"'mass-driver:main :executable t)'; \
-    fi
+# Install dependencies and build binary
+RUN area51 install && area51 build
 
 # --- Runtime stage ---
 FROM debian:bookworm-slim
@@ -48,7 +48,7 @@ RUN useradd -m -s /bin/bash app
 USER app
 WORKDIR /home/app
 
-COPY --from=builder /app/mass-driver /home/app/mass-driver
+COPY --from=builder /app/bin/mass-driver /home/app/mass-driver
 COPY --from=builder /app/static /home/app/static
 
 ENV PORT=3000
