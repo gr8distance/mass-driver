@@ -25,7 +25,7 @@ Usage:
   ;; In templates:
   (card :title \"Hello\"
     (:p \"child content\"))"
-  `(spinneret:deftag ,name (children attrs &key ,@(remove '&key args))
+  `(spinneret:deftag ,name (mass-driver:children attrs &key ,@(remove '&key args))
      (declare (ignore attrs))
      ,@body))
 
@@ -39,7 +39,7 @@ Usage:
      (:html
        (:head (:title ,title))
        (:body ,@children))))"
-  `(spinneret:deftag ,name (children attrs &key ,@(remove '&key args))
+  `(spinneret:deftag ,name (mass-driver:children attrs &key ,@(remove '&key args))
      (declare (ignore attrs))
      ,@body))
 

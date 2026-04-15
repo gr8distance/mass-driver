@@ -28,6 +28,7 @@
    #:defcomponent
    #:deflayout
    #:defview
+   #:children
    ;; Router
    #:defrouter
    #:pipeline
