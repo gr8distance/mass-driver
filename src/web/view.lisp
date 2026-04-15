@@ -55,5 +55,6 @@ Usage:
   ;; In handler:
   (render conn 'pages/home :title \"Hi\" :message \"Welcome\")"
   `(defun ,name (&key ,@args)
+     (declare (ignorable ,@(mapcar (lambda (a) (if (listp a) (car a) a)) args)))
      (spinneret:with-html-string
        ,@body)))
