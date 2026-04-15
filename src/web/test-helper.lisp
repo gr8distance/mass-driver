@@ -12,10 +12,13 @@
 ;;;       (ok (search "Welcome" (conn-response-body conn)))))
 ;;; --------------------------------------------------------------------------
 
-(defun request (method path &key params headers body)
+(defvar *test-router* nil
+  "Router used by the test request helper. Set this in your test setup.")
+
+(defun request (method path &key params headers body router)
   "Simulate an HTTP request and return the conn after dispatch.
 METHOD is a keyword (:get, :post, etc.).
-PARAMS is an alist of query/body params."
+ROUTER defaults to *test-router*."
   (let ((env (list :request-method method
                    :path-info path
                    :query-string (when (and params (eq method :get))
@@ -25,9 +28,10 @@ PARAMS is an alist of query/body params."
                    :raw-body (when body
                                (make-string-input-stream
                                 (if (stringp body) body
-                                    (build-query-string body)))))))
+                                    (build-query-string body))))))
+        (routes (or router *test-router*)))
     ;; Run through dispatch
-    (let* ((response (dispatch *router* env))
+    (let* ((response (dispatch routes env))
            (conn (make-conn :env env)))
       (setf (conn-status conn) (first response)
             (conn-response-headers conn) (second response)

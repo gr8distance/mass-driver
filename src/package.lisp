@@ -33,6 +33,7 @@
    #:defrouter
    #:pipeline
    #:scope
+   #:dispatch
    ;; Handler
    #:defhandler
    ;; Conn
@@ -82,7 +83,10 @@
    #:defmail
    #:send-mail
    #:mail
+   ;; Styles
+   #:compile-styles
    ;; Test helpers
+   #:*test-router*
    #:request
    #:assert-status
    #:assert-body-contains
