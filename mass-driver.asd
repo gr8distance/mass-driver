@@ -63,8 +63,7 @@
                     :components ((:file "app")))
                    (:module "pages"
                     :depends-on ("view" "components" "layouts")
-                    :components ((:file "home")))))
-                 (:file "main" :depends-on ("package" "config" "db" "app" "web")))))
+                    :components ((:file "home"))))))))
   :in-order-to ((test-op (test-op "mass-driver/tests"))))
 
 (defsystem "mass-driver/tests"

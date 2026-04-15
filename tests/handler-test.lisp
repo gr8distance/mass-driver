@@ -1,16 +1,24 @@
 (in-package #:mass-driver/tests)
 
-(deftest test-home-page
-  (let ((conn (request :get "/")))
-    (ok (assert-status conn 200))
-    (ok (assert-body-contains conn "Welcome to mass-driver"))
-    (ok (assert-body-contains conn "<!DOCTYPE html>"))))
+;;; Test the framework's routing and dispatch with a minimal router
 
-(deftest test-about-page
-  (let ((conn (request :get "/about")))
-    (ok (assert-status conn 200))
-    (ok (assert-body-contains conn "About"))))
+(mass-driver:defhandler test/index (conn)
+  (mass-driver:render conn #'test/index-view))
 
-(deftest test-not-found
-  (let ((conn (request :get "/nonexistent")))
-    (ok (assert-status conn 404))))
+(defun test/index-view (&key)
+  "OK")
+
+(mass-driver:defrouter *test-routes*
+  (mass-driver:scope "/" ()
+    (:get "/" 'test/index)))
+
+(setf mass-driver:*test-router* *test-routes*)
+
+(deftest test-dispatch-200
+  (let ((conn (mass-driver:request :get "/")))
+    (ok (mass-driver:assert-status conn 200))
+    (ok (mass-driver:assert-body-contains conn "OK"))))
+
+(deftest test-dispatch-404
+  (let ((conn (mass-driver:request :get "/nonexistent")))
+    (ok (mass-driver:assert-status conn 404))))
