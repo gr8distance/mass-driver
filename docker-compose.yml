@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-sqlite3:///home/app/data/dev.db}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-dev-secret-change-me-in-prod}
+    volumes:
+      - app-data:/home/app/data
+
+volumes:
+  app-data:
